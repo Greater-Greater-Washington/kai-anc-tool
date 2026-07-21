@@ -213,6 +213,14 @@
       maxZoom: 18
     }).addTo(map);
 
+    // Embedded in a CMS post, this script's stylesheet can still be loading (and the container
+    // still zero-height) at the instant fitBounds ran above, which throws the initial zoom off.
+    // Re-measure once everything has definitely finished loading.
+    window.addEventListener("load", function () {
+      map.invalidateSize();
+      map.fitBounds(CONFIG.dcBounds);
+    });
+
     setStatus("Loading map data…");
 
     Promise.all([
