@@ -1,1 +1,39 @@
-placeholder
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GGWash ANC Candidate Tool — preview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="anc-tool.css" />
+<style>
+  body { margin: 24px; }
+  .preview-note { max-width: 900px; background: #fff8e1; border: 1px solid #e6c200; padding: 10px 14px; border-radius: 4px; font-family: sans-serif; font-size: 14px; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<div class="preview-note">
+  This is the standalone preview page — visiting this URL directly is how you check the tool before it goes into an EE post.
+  The block below (from <code>&lt;div class="anc-tool"&gt;</code> to the closing <code>&lt;script&gt;</code> tag)
+  is exactly what gets pasted into the EE Inline Code Snippet field.
+</div>
+
+<div class="anc-tool">
+  <div class="anc-controls">
+    <select class="anc-smd-select"><option value="">Choose an SMD…</option></select>
+    <input type="text" class="anc-address-input" placeholder="Or search an address in DC…">
+    <button type="button" class="anc-address-btn">Search</button>
+  </div>
+  <div class="anc-status"></div>
+  <div class="anc-map"></div>
+  <div class="anc-selection"></div>
+  <div class="anc-charts"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="anc-tool.js"></script>
+
+</body>
+</html>
