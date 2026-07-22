@@ -242,14 +242,14 @@
         (candidatesBySMD[c.smd] = candidatesBySMD[c.smd] || []).push(c);
       });
 
-      L.geoJSON(ancGeoJSON, { style: { color: "#111111", weight: 2, fillOpacity: 0 }, interactive: false }).addTo(map);
+      L.geoJSON(ancGeoJSON, { style: { color: "#333333", weight: 2, fillOpacity: 0 }, interactive: false }).addTo(map);
 
       var smdLayer = L.geoJSON(smdGeoJSON, {
-        style: { color: "#9db2a3", weight: 1, fillOpacity: 0.05 },
+        style: { color: "#5b9bd5", weight: 1, fillOpacity: 0.05 },
         onEachFeature: function (feature, layer) {
           layer.on("click", function () { selectSMD(feature.properties.SMD_ID); });
-          layer.on("mouseover", function () { layer.setStyle({ fillOpacity: 0.25, fillColor: "#0f9535" }); });
-          layer.on("mouseout", function () { if (layer !== currentHighlight) layer.setStyle({ fillOpacity: 0.05, fillColor: "#9db2a3" }); });
+          layer.on("mouseover", function () { layer.setStyle({ fillOpacity: 0.25, fillColor: "#5b9bd5" }); });
+          layer.on("mouseout", function () { if (layer !== currentHighlight) layer.setStyle({ fillOpacity: 0.05, fillColor: "#5b9bd5" }); });
           layer.bindTooltip(feature.properties.SMD_ID, {
             permanent: true,
             direction: "center",
@@ -285,10 +285,10 @@
         sortedSMDs.map(function (id) { return '<option value="' + id + '">' + id + " (ANC " + ancOf(id) + ")</option>"; }).join("");
 
       function selectSMD(smdId) {
-        if (currentHighlight) currentHighlight.setStyle({ fillOpacity: 0.05, color: "#9db2a3", fillColor: "#9db2a3" });
+        if (currentHighlight) currentHighlight.setStyle({ fillOpacity: 0.05, color: "#5b9bd5", fillColor: "#5b9bd5" });
         var layer = smdLayers[smdId];
         if (layer) {
-          layer.setStyle({ fillOpacity: 0.35, color: "#0f9535", fillColor: "#0f9535" });
+          layer.setStyle({ fillOpacity: 0.35, color: "#1155cc", fillColor: "#1155cc" });
           currentHighlight = layer;
           map.fitBounds(layer.getBounds(), { maxZoom: 15 });
           updateSMDLabelVisibility();
@@ -331,6 +331,69 @@
         return card;
       }
 
+      // --- Turn a batch of free-text answers into a frequency-sized word cloud. ---
+      // Deliberately simple word-frequency counting (no external NLP library): as more real
+      // responses come in, recurring themes (e.g. "speeding", "traffic") naturally surface as
+      // the largest words without needing a hand-maintained theme taxonomy.
+      var WORDCLOUD_STOPWORDS = {
+        "the": 1, "a": 1, "an": 1, "and": 1, "or": 1, "of": 1, "in": 1, "on": 1, "at": 1, "to": 1,
+        "is": 1, "are": 1, "was": 1, "were": 1, "be": 1, "being": 1, "been": 1, "for": 1, "with": 1,
+        "without": 1, "that": 1, "this": 1, "these": 1, "those": 1, "it": 1, "its": 1, "our": 1,
+        "we": 1, "i": 1, "my": 1, "me": 1, "you": 1, "your": 1, "they": 1, "them": 1, "their": 1,
+        "there": 1, "here": 1, "more": 1, "most": 1, "some": 1, "any": 1, "all": 1, "not": 1, "no": 1,
+        "so": 1, "as": 1, "if": 1, "than": 1, "then": 1, "also": 1, "just": 1, "really": 1, "very": 1,
+        "have": 1, "has": 1, "had": 1, "will": 1, "would": 1, "should": 1, "could": 1, "can": 1,
+        "do": 1, "does": 1, "did": 1, "feel": 1, "think": 1, "biggest": 1, "issue": 1, "issues": 1,
+        "neighborhood": 1, "neighborhoods": 1, "about": 1, "into": 1, "from": 1, "by": 1, "up": 1,
+        "out": 1, "get": 1, "getting": 1, "much": 1, "many": 1, "lot": 1, "lack": 1
+      };
+      function stem(word) {
+        if (word.length > 5 && word.slice(-3) === "ing") return word.slice(0, -3);
+        if (word.length > 5 && word.slice(-3) === "ies") return word.slice(0, -3) + "y";
+        if (word.length > 5 && word.slice(-2) === "ed" && word.slice(-3) !== "eed") return word.slice(0, -2);
+        if (word.length > 4 && word.slice(-1) === "s" && word.slice(-2) !== "ss") return word.slice(0, -1);
+        return word;
+      }
+      function buildWordCloud(texts) {
+        var counts = {};
+        var displayForm = {};
+        texts.forEach(function (text) {
+          norm(text).toLowerCase().split(/[^a-z']+/).forEach(function (raw) {
+            if (!raw || raw.length < 3 || WORDCLOUD_STOPWORDS[raw]) return;
+            var stemmed = stem(raw);
+            if (WORDCLOUD_STOPWORDS[stemmed]) return;
+            counts[stemmed] = (counts[stemmed] || 0) + 1;
+            displayForm[stemmed] = displayForm[stemmed] || raw;
+          });
+        });
+        var entries = Object.keys(counts).map(function (k) { return { word: displayForm[k], count: counts[k] }; });
+        entries.sort(function (a, b) { return b.count - a.count; });
+        return entries.slice(0, 40);
+      }
+      function renderWordCloudHTML(entries) {
+        if (!entries.length) return '<p class="anc-no-response">No responses yet for this question.</p>';
+        var counts = entries.map(function (e) { return e.count; });
+        var minCount = Math.min.apply(null, counts), maxCount = Math.max.apply(null, counts);
+        var minFont = 14, maxFont = 42;
+        var palette = ["#0f9535", "#0b7229", "#333333", "#9db2a3"];
+        // Shuffle for an organic cloud layout, independent of frequency order.
+        var shuffled = entries.slice();
+        for (var i = shuffled.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+        }
+        var html = '<div class="anc-wordcloud">';
+        shuffled.forEach(function (e, idx) {
+          var size = maxCount === minCount ? (minFont + maxFont) / 2 :
+            minFont + (e.count - minCount) / (maxCount - minCount) * (maxFont - minFont);
+          var color = palette[idx % palette.length];
+          html += '<span class="anc-wordcloud-word" style="font-size:' + size.toFixed(0) + 'px;color:' + color +
+            '" title="' + e.count + (e.count === 1 ? " mention" : " mentions") + '">' + escapeHTML(e.word) + "</span>";
+        });
+        html += "</div>";
+        return html;
+      }
+
       function renderCitywideCharts() {
         var responded = candidates.filter(function (c) { return c.hasResponse; });
         var html = '<h3 class="anc-charts-heading">How all candidates responded</h3>' +
@@ -339,6 +402,11 @@
           if (q.type === "openended") {
             var quotes = responded.map(function (c) { return c.answers[q.key]; }).filter(Boolean);
             if (!quotes.length) return;
+            if (/biggest issue/i.test(q.key)) {
+              html += '<div class="anc-chart-block"><div class="anc-chart-question">' + escapeHTML(q.key) + "</div>" +
+                renderWordCloudHTML(buildWordCloud(quotes)) + "</div>";
+              return;
+            }
             html += '<div class="anc-chart-block"><div class="anc-chart-question">' + escapeHTML(q.key) + '</div><ul class="anc-quotes-list">' +
               quotes.slice(0, 8).map(function (qt) { return "<li>“" + escapeHTML(qt) + "”</li>"; }).join("") + "</ul></div>";
             return;
