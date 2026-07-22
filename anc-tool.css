@@ -24,9 +24,9 @@
 
 .anc-tool .anc-logo {
   display: block;
-  height: 48px;
+  height: 88px;
   width: auto;
-  margin: 0 0 16px;
+  margin: 0 0 20px;
 }
 
 .anc-tool .anc-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
