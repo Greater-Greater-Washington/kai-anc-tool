@@ -1,45 +1,129 @@
-.anc-tool { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; color: #222; max-width: 900px; }
+/* ==========================================================================
+   GGWash brand tokens (from GGWash_marketing_style_guide.pdf)
+   Headlines/Titles: Whitney Condensed Semibold (already loaded sitewide on
+   ggwash.org via Typekit when this is embedded in an EE post — the fallback
+   stack below only kicks in on the standalone GitHub Pages preview).
+   Body: Georgia
+   ========================================================================== */
+.anc-tool {
+  --gg-green: #0f9535;
+  --gg-green-dark: #0b7229;
+  --gg-light-green: #c3e4cc;
+  --gg-gray-green: #9db2a3;
+  --gg-light-gray-green: #f5f7f5;
+  --gg-gray: #dddddd;
+  --gg-black: #111111;
+
+  --gg-font-headline: "Whitney Condensed Semibold", "Whitney Condensed", "Arial Narrow", Arial, sans-serif;
+  --gg-font-body: Georgia, "Times New Roman", Times, serif;
+
+  font-family: var(--gg-font-body);
+  color: var(--gg-black);
+  max-width: 900px;
+}
 
 .anc-tool .anc-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
 .anc-tool .anc-controls select,
-.anc-tool .anc-controls input[type="text"] { font-size: 15px; padding: 7px 9px; border: 1px solid #ccc; border-radius: 4px; }
+.anc-tool .anc-controls input[type="text"] {
+  font-family: var(--gg-font-body);
+  font-size: 15px; padding: 7px 9px;
+  border: 1px solid var(--gg-gray-green);
+  border-radius: 4px;
+  color: var(--gg-black);
+  background: #fff;
+}
+.anc-tool .anc-controls select:focus,
+.anc-tool .anc-controls input[type="text"]:focus {
+  outline: none;
+  border-color: var(--gg-green);
+  box-shadow: 0 0 0 2px var(--gg-light-green);
+}
 .anc-tool .anc-controls input[type="text"] { flex: 1; min-width: 220px; }
-.anc-tool .anc-controls button { font-size: 15px; padding: 7px 14px; border: 1px solid #1155cc; background: #1155cc; color: #fff; border-radius: 4px; cursor: pointer; }
-.anc-tool .anc-controls button:hover { background: #0d3f99; }
-.anc-tool .anc-status { font-size: 13px; color: #666; min-height: 18px; margin-bottom: 6px; }
+.anc-tool .anc-controls button {
+  font-family: var(--gg-font-headline);
+  letter-spacing: .02em;
+  font-size: 16px; padding: 7px 16px;
+  border: 1px solid var(--gg-green);
+  background: var(--gg-green);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.anc-tool .anc-controls button:hover { background: var(--gg-green-dark); border-color: var(--gg-green-dark); }
+.anc-tool .anc-status { font-family: var(--gg-font-body); font-size: 13px; color: #555; min-height: 18px; margin-bottom: 6px; }
 
-.anc-tool .anc-map { height: 460px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 18px; }
+.anc-tool .anc-map { height: 460px; border: 1px solid var(--gg-gray); border-radius: 4px; margin-bottom: 18px; }
 .anc-tool .leaflet-interactive:focus { outline: none; }
 
-.anc-tool .anc-selected-heading { font-size: 20px; font-weight: 700; margin: 0 0 4px; }
-.anc-tool .anc-selected-sub { font-size: 14px; color: #666; margin: 0 0 14px; }
+/* SMD labels on the map */
+.anc-tool .leaflet-tooltip.anc-smd-label {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--gg-font-body);
+  font-weight: 700;
+  font-size: 10px;
+  color: var(--gg-green-dark);
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 3px #fff;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.anc-tool .leaflet-tooltip.anc-smd-label::before { display: none; }
 
-.anc-tool .anc-candidate-card { border: 1px solid #ddd; border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; background: #fafafa; }
-.anc-tool .anc-candidate-card.endorsed { border-color: #2e7d32; background: #f3faf3; }
-.anc-tool .anc-candidate-name { font-size: 17px; font-weight: 700; margin: 0 0 2px; }
-.anc-tool .anc-candidate-name a { color: #1155cc; text-decoration: none; }
+.anc-tool .anc-selected-heading {
+  font-family: var(--gg-font-headline);
+  font-size: 26px; font-weight: 700; letter-spacing: .01em;
+  color: var(--gg-black);
+  margin: 0 0 4px;
+}
+.anc-tool .anc-selected-sub { font-family: var(--gg-font-body); font-size: 14px; color: #555; margin: 0 0 14px; }
+
+.anc-tool .anc-candidate-card {
+  border: 1px solid var(--gg-gray);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: var(--gg-light-gray-green);
+}
+.anc-tool .anc-candidate-card.endorsed { border-color: var(--gg-green); background: var(--gg-light-green); }
+.anc-tool .anc-candidate-name { font-family: var(--gg-font-headline); font-size: 20px; font-weight: 700; margin: 0 0 2px; }
+.anc-tool .anc-candidate-name a { color: var(--gg-green-dark); text-decoration: none; }
 .anc-tool .anc-candidate-name a:hover { text-decoration: underline; }
-.anc-tool .anc-writein-tag { font-weight: 400; font-size: 13px; color: #888; }
+.anc-tool .anc-writein-tag { font-family: var(--gg-font-body); font-weight: 400; font-size: 13px; color: #777; }
 
-.anc-tool .anc-endorsed-ribbon { display: inline-flex; align-items: center; gap: 6px; background: #2e7d32; color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; margin: 4px 0 8px; }
-.anc-tool .anc-pull-quote { font-style: italic; color: #333; border-left: 3px solid #2e7d32; padding-left: 10px; margin: 8px 0; font-size: 15px; }
+.anc-tool .anc-endorsed-ribbon {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--gg-green); color: #fff;
+  font-family: var(--gg-font-headline);
+  font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px; margin: 4px 0 8px;
+}
+.anc-tool .anc-pull-quote { font-style: italic; color: var(--gg-black); border-left: 3px solid var(--gg-green); padding-left: 10px; margin: 8px 0; font-size: 15px; }
 .anc-tool .anc-writeup-link { font-size: 13px; }
+.anc-tool .anc-writeup-link a { color: var(--gg-green-dark); }
 
-.anc-tool .anc-no-response { color: #888; font-size: 14px; font-style: italic; }
+.anc-tool .anc-no-response { color: #777; font-size: 14px; font-style: italic; }
 
 .anc-tool .anc-answer-row { margin: 8px 0; font-size: 14px; }
-.anc-tool .anc-answer-q { font-weight: 600; margin-bottom: 2px; }
+.anc-tool .anc-answer-q { font-weight: 600; margin-bottom: 2px; color: var(--gg-black); }
 .anc-tool .anc-answer-a { color: #333; }
 
-.anc-tool .anc-charts-heading { font-size: 20px; font-weight: 700; margin: 30px 0 4px; }
-.anc-tool .anc-charts-sub { font-size: 14px; color: #666; margin: 0 0 18px; }
+.anc-tool .anc-charts-heading {
+  font-family: var(--gg-font-headline);
+  font-size: 26px; font-weight: 700; letter-spacing: .01em;
+  color: var(--gg-black);
+  margin: 30px 0 4px;
+}
+.anc-tool .anc-charts-sub { font-size: 14px; color: #555; margin: 0 0 18px; }
 .anc-tool .anc-chart-block { margin-bottom: 26px; }
-.anc-tool .anc-chart-question { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.anc-tool .anc-chart-question { font-family: var(--gg-font-headline); font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--gg-black); }
 .anc-tool .anc-bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 13px; }
-.anc-tool .anc-bar-label { width: 220px; flex-shrink: 0; text-align: right; color: #333; }
-.anc-tool .anc-bar-track { flex: 1; background: #eee; border-radius: 3px; height: 18px; position: relative; }
-.anc-tool .anc-bar-fill { background: #5b9bd5; height: 100%; border-radius: 3px; }
-.anc-tool .anc-bar-count { width: 34px; flex-shrink: 0; font-size: 12px; color: #666; }
+.anc-tool .anc-bar-label { width: 220px; flex-shrink: 0; text-align: right; color: var(--gg-black); }
+.anc-tool .anc-bar-track { flex: 1; background: var(--gg-light-gray-green); border-radius: 3px; height: 18px; position: relative; }
+.anc-tool .anc-bar-fill { background: var(--gg-green); height: 100%; border-radius: 3px; }
+.anc-tool .anc-bar-count { width: 34px; flex-shrink: 0; font-size: 12px; color: #555; }
 
 .anc-tool .anc-quotes-list { list-style: none; margin: 0; padding: 0; }
-.anc-tool .anc-quotes-list li { font-size: 14px; margin-bottom: 6px; padding-left: 10px; border-left: 2px solid #ddd; }
+.anc-tool .anc-quotes-list li { font-size: 14px; margin-bottom: 6px; padding-left: 10px; border-left: 2px solid var(--gg-gray); }

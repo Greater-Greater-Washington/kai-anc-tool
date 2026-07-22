@@ -242,20 +242,40 @@
         (candidatesBySMD[c.smd] = candidatesBySMD[c.smd] || []).push(c);
       });
 
-      L.geoJSON(ancGeoJSON, { style: { color: "#333", weight: 2, fillOpacity: 0 }, interactive: false }).addTo(map);
+      L.geoJSON(ancGeoJSON, { style: { color: "#111111", weight: 2, fillOpacity: 0 }, interactive: false }).addTo(map);
 
       var smdLayer = L.geoJSON(smdGeoJSON, {
-        style: { color: "#5b9bd5", weight: 1, fillOpacity: 0.05 },
+        style: { color: "#9db2a3", weight: 1, fillOpacity: 0.05 },
         onEachFeature: function (feature, layer) {
           layer.on("click", function () { selectSMD(feature.properties.SMD_ID); });
-          layer.on("mouseover", function () { layer.setStyle({ fillOpacity: 0.25 }); });
-          layer.on("mouseout", function () { if (layer !== currentHighlight) layer.setStyle({ fillOpacity: 0.05 }); });
+          layer.on("mouseover", function () { layer.setStyle({ fillOpacity: 0.25, fillColor: "#0f9535" }); });
+          layer.on("mouseout", function () { if (layer !== currentHighlight) layer.setStyle({ fillOpacity: 0.05, fillColor: "#9db2a3" }); });
+          layer.bindTooltip(feature.properties.SMD_ID, {
+            permanent: true,
+            direction: "center",
+            className: "anc-smd-label",
+            interactive: false
+          });
         }
       }).addTo(map);
 
       var smdLayers = {};
       smdLayer.eachLayer(function (l) { smdLayers[l.feature.properties.SMD_ID] = l; });
       var currentHighlight = null;
+
+      // Labels for every SMD would be unreadable citywide, so only show them once the map
+      // is zoomed in far enough to actually read them (e.g. after an SMD is selected).
+      var SMD_LABEL_MIN_ZOOM = 13;
+      function updateSMDLabelVisibility() {
+        var show = map.getZoom() >= SMD_LABEL_MIN_ZOOM;
+        smdLayer.eachLayer(function (l) {
+          var tooltip = l.getTooltip();
+          var el = tooltip && tooltip.getElement();
+          if (el) el.style.display = show ? "" : "none";
+        });
+      }
+      map.on("zoomend", updateSMDLabelVisibility);
+      updateSMDLabelVisibility();
 
       var sortedSMDs = Object.keys(candidatesBySMD).concat(
         smdGeoJSON.features.map(function (f) { return f.properties.SMD_ID; })
@@ -265,12 +285,13 @@
         sortedSMDs.map(function (id) { return '<option value="' + id + '">' + id + " (ANC " + ancOf(id) + ")</option>"; }).join("");
 
       function selectSMD(smdId) {
-        if (currentHighlight) currentHighlight.setStyle({ fillOpacity: 0.05, color: "#5b9bd5" });
+        if (currentHighlight) currentHighlight.setStyle({ fillOpacity: 0.05, color: "#9db2a3", fillColor: "#9db2a3" });
         var layer = smdLayers[smdId];
         if (layer) {
-          layer.setStyle({ fillOpacity: 0.35, color: "#1155cc" });
+          layer.setStyle({ fillOpacity: 0.35, color: "#0f9535", fillColor: "#0f9535" });
           currentHighlight = layer;
           map.fitBounds(layer.getBounds(), { maxZoom: 15 });
+          updateSMDLabelVisibility();
         }
         smdSelect.value = smdId;
         setStatus("");
