@@ -65,9 +65,9 @@
       if (/^name$/i.test(sub)) { cols.push({ role: "name" }); i++; continue; }
       if (/^email$/i.test(sub)) { cols.push({ role: "skip" }); i++; continue; }
       if (/campaign.*social media/i.test(sub) || /fundraising link/i.test(sub)) { cols.push({ role: "skip" }); i++; continue; }
-      if (/upload a photo/i.test(q)) { cols.push({ role: "skip" }); i++; continue; }
-      if (/\bsmd\b/i.test(q)) { cols.push({ role: "smd" }); i++; continue; }
-      if (/advisory neighborhood commission/i.test(q) && /^response$/i.test(sub)) { cols.push({ role: "anc" }); i++; continue; }
+      if (/upload a (photo|headshot|picture|image)/i.test(q)) { cols.push({ role: "skip" }); i++; continue; }
+      if (/^select the smd\b/i.test(q)) { cols.push({ role: "smd" }); i++; continue; }
+      if (/^select the advisory neighborhood commission/i.test(q) && /^response$/i.test(sub)) { cols.push({ role: "anc" }); i++; continue; }
 
       // Start (or continue) a question group: gather every contiguous column sharing this question text.
       var j = i;
